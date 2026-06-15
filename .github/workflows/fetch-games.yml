@@ -30,11 +30,11 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma generate
 
-      - name: Run migrations
+      - name: Sync database schema
         working-directory: backend
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npx prisma migrate deploy
+        run: npx prisma db push --accept-data-loss
 
       - name: Fetch 100 games from RAWG
         working-directory: backend

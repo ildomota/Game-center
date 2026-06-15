@@ -5,23 +5,30 @@ const prisma = require('../lib/prisma');
 const RAWG_KEY = process.env.RAWG_API_KEY;
 const BASE_URL = 'https://api.rawg.io/api';
 
-async function fetchAndStoreGames(page = 1, pageSize = 40) {
+async function getNextPage() {
+  const config = await prisma.config.findUnique({ where: { key: 'lastFetchedPage' } });
+  return config ? parseInt(config.value) + 1 : 1;
+}
+
+async function saveNextPage(page) {
+  await prisma.config.upsert({
+    where: { key: 'lastFetchedPage' },
+    update: { value: String(page) },
+    create: { key: 'lastFetchedPage', value: String(page) },
+  });
+}
+
+async function fetchAndStoreGames(page, pageSize = 34) {
   console.log(`Fetching RAWG page ${page} (${pageSize} games)...`);
 
   const { data } = await axios.get(`${BASE_URL}/games`, {
-    params: {
-      key: RAWG_KEY,
-      page,
-      page_size: pageSize,
-      ordering: '-added',
-    },
+    params: { key: RAWG_KEY, page, page_size: pageSize, ordering: '-added' },
   });
 
   let saved = 0;
 
   for (const game of data.results) {
     try {
-      // Fetch full detail for description + system requirements
       const { data: detail } = await axios.get(`${BASE_URL}/games/${game.id}`, {
         params: { key: RAWG_KEY },
       });
@@ -39,7 +46,6 @@ async function fetchAndStoreGames(page = 1, pageSize = 40) {
         return acc;
       }, {});
 
-      // Fetch screenshots
       const { data: ssData } = await axios.get(`${BASE_URL}/games/${game.id}/screenshots`, {
         params: { key: RAWG_KEY },
       });
@@ -73,7 +79,6 @@ async function fetchAndStoreGames(page = 1, pageSize = 40) {
       });
 
       saved++;
-      // Respect RAWG rate limit
       await new Promise((r) => setTimeout(r, 250));
     } catch (err) {
       console.error(`Failed to save game ${game.id}:`, err.message);
@@ -85,12 +90,16 @@ async function fetchAndStoreGames(page = 1, pageSize = 40) {
 }
 
 async function fetchHundredGames() {
+  const startPage = await getNextPage();
   let total = 0;
-  // Fetch 3 pages of 34 games each ≈ 102 games
-  for (let page = 1; page <= 3; page++) {
+
+  for (let i = 0; i < 3; i++) {
+    const page = startPage + i;
     total += await fetchAndStoreGames(page, 34);
+    await saveNextPage(page);
   }
-  console.log(`Total games saved: ${total}`);
+
+  console.log(`Total games saved: ${total}. Next run starts at page ${startPage + 3}.`);
   process.exit(0);
 }
 

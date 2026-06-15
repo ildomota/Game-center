@@ -6,6 +6,12 @@ datasource db {
   provider = "postgresql"
 }
 
+model Config {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
 model Game {
   id                 Int      @id @default(autoincrement())
   rawgId             Int      @unique

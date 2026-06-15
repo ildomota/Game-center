@@ -8,61 +8,60 @@ function HeroGame({ game }) {
   const genres = Array.isArray(game.genres) ? game.genres : []
 
   return (
-    <Link to={`/game/${game.slug}`} className="group relative block w-full h-[500px] overflow-hidden rounded-2xl border border-white/10 hover:border-indigo-500/30 transition-all">
-      <img src={game.backgroundImage} alt={game.name}
-        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-transparent to-transparent" />
+    <Link to={`/game/${game.slug}`} className="group relative block w-full overflow-hidden" style={{ height: '460px' }}>
+      <img
+        src={game.backgroundImage}
+        alt={game.name}
+        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#15151e] via-[#15151e]/50 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#15151e]/70 via-transparent to-transparent" />
 
       <div className="absolute bottom-0 left-0 p-8 max-w-2xl">
         <div className="flex flex-wrap gap-2 mb-3">
           {genres.slice(0, 3).map((g) => (
-            <span key={g.id || g.name} className="text-xs bg-indigo-600/80 backdrop-blur text-white rounded-full px-3 py-1 font-medium">{g.name}</span>
+            <span key={g.id || g.name} className="text-[11px] bg-white/10 text-white rounded px-2.5 py-0.5 font-semibold uppercase tracking-wide">
+              {g.name}
+            </span>
           ))}
         </div>
-        <h2 className="text-4xl md:text-5xl font-bold text-white mb-3 leading-tight group-hover:text-indigo-200 transition-colors">{game.name}</h2>
-        {game.description && (
-          <p className="text-gray-300 text-sm leading-relaxed line-clamp-2 mb-4">{game.description}</p>
-        )}
-        <div className="flex flex-wrap items-center gap-3">
+        <h2 className="text-4xl font-black text-white mb-3 leading-tight group-hover:text-indigo-200 transition-colors">
+          {game.name}
+        </h2>
+        <div className="flex items-center gap-3">
           {game.rating > 0 && (
-            <div className="flex items-center gap-1.5 bg-black/50 backdrop-blur rounded-full px-3 py-1.5">
-              <span className="text-yellow-400 text-sm">★</span>
-              <span className="text-white font-semibold text-sm">{game.rating?.toFixed(1)}</span>
-              <span className="text-gray-400 text-xs">/ {game.ratingTop}</span>
-            </div>
+            <span className="flex items-center gap-1 bg-black/40 rounded px-3 py-1.5 text-sm font-bold text-white">
+              <span className="text-yellow-400">★</span> {game.rating?.toFixed(1)}
+            </span>
           )}
           {game.metacritic && (
-            <div className={`rounded-full px-3 py-1.5 text-xs font-bold backdrop-blur border ${
-              game.metacritic >= 75 ? 'bg-green-500/20 text-green-400 border-green-500/30'
-              : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'}`}>
+            <span className={`rounded px-3 py-1.5 text-xs font-bold border ${
+              game.metacritic >= 75 ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
+            }`}>
               Metacritic {game.metacritic}
-            </div>
+            </span>
           )}
-          {game.released && <span className="text-gray-400 text-sm">{new Date(game.released).getFullYear()}</span>}
+          {game.released && <span className="text-[#777] text-sm">{new Date(game.released).getFullYear()}</span>}
+          <span className="text-sm text-indigo-400 font-semibold group-hover:text-white transition-colors">View game →</span>
         </div>
-      </div>
-      <div className="absolute top-5 right-5">
-        <span className="bg-indigo-600/90 backdrop-blur text-white text-xs font-semibold px-3 py-1.5 rounded-full">Featured</span>
       </div>
     </Link>
   )
 }
 
-function Section({ title, subtitle, link, children }) {
+function SectionHeader({ title, subtitle, link }) {
   return (
-    <section>
-      <div className="flex items-end justify-between mb-5">
-        <div>
-          <h2 className="text-xl font-bold text-white">{title}</h2>
-          {subtitle && <p className="text-gray-500 text-sm mt-0.5">{subtitle}</p>}
-        </div>
-        {link && (
-          <Link to={link} className="text-indigo-400 hover:text-indigo-300 text-sm font-medium transition">View all →</Link>
-        )}
+    <div className="flex items-center justify-between mb-6">
+      <div>
+        <h2 className="text-3xl font-black text-white tracking-tight">{title}</h2>
+        {subtitle && <p className="text-[#555] text-sm mt-1">{subtitle}</p>}
       </div>
-      {children}
-    </section>
+      {link && (
+        <Link to={link} className="text-xs font-semibold text-[#666] hover:text-white transition-colors uppercase tracking-widest">
+          View all →
+        </Link>
+      )}
+    </div>
   )
 }
 
@@ -73,7 +72,7 @@ export default function HomePage() {
   })
   const { data: newData, isLoading: loadingNew } = useQuery({
     queryKey: ['games', 'new'],
-    queryFn: () => getGames({ limit: 8, ordering: '-released' }),
+    queryFn: () => getGames({ limit: 10, ordering: '-released' }),
   })
 
   const topGames = topData?.results || []
@@ -82,35 +81,51 @@ export default function HomePage() {
   const rest = topGames.slice(1)
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto px-8 py-8 flex flex-col gap-12">
+    <div className="w-full flex flex-col">
+      {/* Hero — full bleed across content area */}
       {loadingTop
-        ? <div className="animate-pulse bg-white/5 rounded-2xl h-[500px]" />
+        ? <div className="animate-pulse bg-white/5" style={{ height: 460 }} />
         : <HeroGame game={featured} />
       }
 
-      <Section title="Top Rated" subtitle="Highest rated games in our library" link="/browse?ordering=-rating">
-        {loadingTop ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, i) => <div key={i} className="animate-pulse bg-white/5 rounded-xl aspect-video" />)}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {rest.map((game) => <GameCard key={game.rawgId} game={game} />)}
-          </div>
-        )}
-      </Section>
+      {/* Sections — full width with padding */}
+      <div className="w-full px-8 flex flex-col gap-14 py-10">
+        <section>
+          <SectionHeader title="Top Rated" subtitle="Highest rated games in our library" link="/browse?ordering=-rating" />
+          {loadingTop ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-5 gap-y-10">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="flex flex-col gap-3">
+                  <div className="animate-pulse bg-white/5 rounded-xl w-full" style={{ aspectRatio: '16/9' }} />
+                  <div className="animate-pulse bg-white/5 rounded h-4 w-3/4" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-5 gap-y-10">
+              {rest.map((game) => <GameCard key={game.rawgId} game={game} />)}
+            </div>
+          )}
+        </section>
 
-      <Section title="Recently Released" subtitle="Latest games added to our library" link="/browse?ordering=-released">
-        {loadingNew ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(8)].map((_, i) => <div key={i} className="animate-pulse bg-white/5 rounded-xl aspect-video" />)}
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {newGames.map((game) => <GameCard key={game.rawgId} game={game} />)}
-          </div>
-        )}
-      </Section>
+        <section>
+          <SectionHeader title="Recently Released" subtitle="Latest games added to our library" link="/browse?ordering=-released" />
+          {loadingNew ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-5 gap-y-10">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="flex flex-col gap-3">
+                  <div className="animate-pulse bg-white/5 rounded-xl w-full" style={{ aspectRatio: '16/9' }} />
+                  <div className="animate-pulse bg-white/5 rounded h-4 w-3/4" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-5 gap-y-10">
+              {newGames.map((game) => <GameCard key={game.rawgId} game={game} />)}
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   )
 }

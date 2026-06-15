@@ -1,68 +1,100 @@
 import { Link } from 'react-router-dom'
 
-function MetacriticBadge({ score }) {
-  if (!score) return null
-  const color = score >= 75 ? 'bg-green-500' : score >= 50 ? 'bg-yellow-500' : 'bg-red-500'
-  return (
-    <div className={`absolute top-2 right-2 ${color} text-white text-xs font-bold rounded px-1.5 py-0.5 shadow`}>
-      {score}
-    </div>
-  )
+const PLATFORM_ICONS = {
+  pc: 'ti-brand-windows',
+  playstation: 'ti-device-gamepad-2',
+  xbox: 'ti-device-gamepad',
+  nintendo: 'ti-device-nintendo',
+  ios: 'ti-brand-apple',
+  android: 'ti-brand-android',
+  mac: 'ti-brand-apple',
+  linux: 'ti-brand-ubuntu',
+}
+
+function getPlatformIcon(slug) {
+  if (!slug) return null
+  const key = Object.keys(PLATFORM_ICONS).find((k) => slug.includes(k))
+  return key ? PLATFORM_ICONS[key] : null
 }
 
 export default function GameCard({ game }) {
-  const genres = Array.isArray(game.genres) ? game.genres.slice(0, 2) : []
+  const addedCount = game.ratingsCount || 0
+
+  const platforms = Array.isArray(game.platforms)
+    ? game.platforms
+        .map((p) => {
+          const slug = p?.platform?.slug || ''
+          const icon = getPlatformIcon(slug)
+          return icon ? { slug, icon } : null
+        })
+        .filter(Boolean)
+        .filter((p, i, arr) => arr.findIndex((x) => x.icon === p.icon) === i)
+        .slice(0, 4)
+    : []
+
+  const scoreColor = !game.metacritic
+    ? ''
+    : game.metacritic >= 75
+    ? 'text-[#5bdd6e] border-[#5bdd6e]'
+    : game.metacritic >= 50
+    ? 'text-[#f5c518] border-[#f5c518]'
+    : 'text-red-500 border-red-500'
 
   return (
-    <Link
-      to={`/game/${game.slug}`}
-      className="group flex flex-col bg-[#13131f] rounded-xl overflow-hidden border border-white/5 hover:border-indigo-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 hover:-translate-y-1"
-    >
+    <Link to={`/game/${game.slug}`} className="group flex flex-col bg-[#202028] rounded-xl overflow-hidden hover:bg-[#26262f] hover:-translate-y-1 transition-all duration-200 shadow-lg shadow-black/20">
+
       {/* Image */}
-      <div className="relative aspect-video overflow-hidden bg-gray-900">
+      <div className="relative aspect-video overflow-hidden bg-[#1a1a22]">
         {game.backgroundImage ? (
           <img
             src={game.backgroundImage}
             alt={game.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover"
             loading="lazy"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-700">
-            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" />
-            </svg>
+          <div className="w-full h-full flex items-center justify-center text-white/10">
+            <i className="ti ti-device-gamepad-2 text-5xl" aria-hidden="true" />
           </div>
         )}
-        <MetacriticBadge score={game.metacritic} />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#13131f] via-transparent to-transparent opacity-60" />
+
+        {/* Play overlay — bottom-left */}
+        <div className="absolute bottom-3 left-3 w-9 h-9 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <i className="ti ti-player-play-filled text-white" style={{ fontSize: 16 }} aria-hidden="true" />
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="flex flex-col flex-1 p-4">
-        <h3 className="text-white font-semibold text-sm leading-snug mb-2 line-clamp-2 group-hover:text-indigo-300 transition-colors">
+      {/* Card body */}
+      <div className="p-4 flex flex-col gap-3">
+
+        {/* Row 1: platforms + metacritic */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {platforms.map((p) => (
+              <i key={p.slug} className={`ti ${p.icon} text-white/40`} style={{ fontSize: 14 }} aria-hidden="true" />
+            ))}
+          </div>
+          {game.metacritic && (
+            <div className={`px-2 py-1 rounded-md border text-sm font-extrabold ${scoreColor}`}>
+              {game.metacritic}
+            </div>
+          )}
+        </div>
+
+        {/* Row 2: title */}
+        <h3 className="text-white font-bold text-lg leading-tight line-clamp-2">
           {game.name}
         </h3>
 
-        <div className="mt-auto flex items-center justify-between">
-          <div className="flex flex-wrap gap-1">
-            {genres.map((g) => (
-              <span key={g.id || g.name} className="text-xs bg-white/5 text-gray-400 rounded-md px-2 py-0.5">
-                {g.name}
-              </span>
-            ))}
-          </div>
-          <div className="flex items-center gap-2 text-xs text-gray-400 shrink-0 ml-2">
-            {game.rating > 0 && (
-              <span className="flex items-center gap-0.5">
-                <span className="text-yellow-400">★</span>
-                {game.rating?.toFixed(1)}
-              </span>
-            )}
-            {game.released && <span className="text-gray-600">·</span>}
-            {game.released && <span>{new Date(game.released).getFullYear()}</span>}
-          </div>
-        </div>
+        {/* Row 3: add button with count */}
+        <button
+          onClick={(e) => e.preventDefault()}
+          className="flex items-center gap-2 self-start bg-white/[0.07] hover:bg-white/[0.14] text-white/70 hover:text-white rounded-lg px-3 py-1.5 transition-all"
+        >
+          <i className="ti ti-plus" style={{ fontSize: 13 }} aria-hidden="true" />
+          <span className="text-sm font-bold">{addedCount > 0 ? addedCount.toLocaleString() : 'Add'}</span>
+        </button>
+
       </div>
     </Link>
   )

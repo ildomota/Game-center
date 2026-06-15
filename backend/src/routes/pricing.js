@@ -1,29 +1,15 @@
 const express = require('express');
 const axios = require('axios');
-const prisma = require('../lib/prisma');
+const { resolveSteamAppId } = require('../lib/steam');
 
 const router = express.Router();
 
 // GET /api/pricing/:slug — fetch Steam price for a game
 router.get('/:slug', async (req, res) => {
   try {
-    const game = await prisma.game.findUnique({
-      where: { slug: req.params.slug },
-      select: { steamAppId: true, stores: true },
-    });
+    const { found, steamAppId } = await resolveSteamAppId(req.params.slug);
 
-    if (!game) return res.status(404).json({ error: 'Game not found' });
-
-    // Try to get Steam App ID from stored field or extract from store URLs
-    let steamAppId = game.steamAppId;
-
-    if (!steamAppId && Array.isArray(game.stores)) {
-      const steamStore = game.stores.find((s) => s.slug === 'steam' || s.name?.toLowerCase() === 'steam');
-      if (steamStore?.url) {
-        const match = steamStore.url.match(/\/app\/(\d+)/);
-        if (match) steamAppId = parseInt(match[1]);
-      }
-    }
+    if (!found) return res.status(404).json({ error: 'Game not found' });
 
     if (!steamAppId) {
       return res.json({ available: false, reason: 'No Steam listing found' });

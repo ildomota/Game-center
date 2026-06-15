@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
     const where = {
       ...(search && { name: { contains: search, mode: 'insensitive' } }),
       ...(genre && {
-        genres: { path: '$[*].name', string_contains: genre }
+        genres: { array_contains: [{ name: genre }] }
       }),
     };
 

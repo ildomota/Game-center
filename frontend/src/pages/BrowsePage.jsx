@@ -24,11 +24,12 @@ export default function BrowsePage() {
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['games', 'browse', search, genre, ordering, page],
-    queryFn: () => getGames({ search, genre, ordering, page, limit: 20 }),
+    queryFn: () => getGames({ search, genre, ordering, page, limit: 24 }),
     keepPreviousData: true,
   })
 
   const games = data?.results || []
+  const total = data?.count || 0
 
   const setParam = (key, value) => {
     const next = new URLSearchParams(searchParams)
@@ -38,85 +39,102 @@ export default function BrowsePage() {
   }
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-3xl font-bold text-white">
+    <div className="w-full max-w-[1600px] mx-auto px-6 py-8">
+
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-white mb-1">
           {search ? `Results for "${search}"` : 'Browse Games'}
         </h1>
+        <p className="text-gray-500 text-sm">
+          {total > 0 ? `${total.toLocaleString()} games found` : 'Explore our full library'}
+        </p>
+      </div>
+
+      {/* Filters bar */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="flex flex-wrap gap-2 flex-1">
+          <button
+            onClick={() => setParam('genre', '')}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${!genre ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'}`}
+          >
+            All
+          </button>
+          {GENRES.map((g) => (
+            <button
+              key={g}
+              onClick={() => setParam('genre', genre === g ? '' : g)}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${genre === g ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'}`}
+            >
+              {g}
+            </button>
+          ))}
+        </div>
+
         <select
           value={ordering}
           onChange={(e) => setParam('ordering', e.target.value)}
-          className="bg-white/10 border border-white/10 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0 cursor-pointer"
         >
           {ORDERINGS.map((o) => (
-            <option key={o.value} value={o.value} className="bg-gray-900">{o.label}</option>
+            <option key={o.value} value={o.value} className="bg-[#13131f]">{o.label}</option>
           ))}
         </select>
       </div>
 
-      {/* Genre filters */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        <button
-          onClick={() => setParam('genre', '')}
-          className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${!genre ? 'bg-indigo-600 text-white' : 'bg-white/10 text-gray-300 hover:bg-white/20'}`}
-        >
-          All
-        </button>
-        {GENRES.map((g) => (
-          <button
-            key={g}
-            onClick={() => setParam('genre', genre === g ? '' : g)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium transition ${genre === g ? 'bg-indigo-600 text-white' : 'bg-white/10 text-gray-300 hover:bg-white/20'}`}
-          >
-            {g}
-          </button>
-        ))}
-      </div>
-
+      {/* Grid */}
       {isLoading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {[...Array(20)].map((_, i) => (
-            <div key={i} className="animate-pulse bg-gray-800 rounded-xl aspect-video" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          {[...Array(24)].map((_, i) => (
+            <div key={i} className="animate-pulse bg-gray-800/60 rounded-xl aspect-video" />
           ))}
         </div>
       )}
 
-      {isError && <p className="text-red-400 text-center py-20">Failed to load games.</p>}
+      {isError && (
+        <div className="text-center py-32">
+          <p className="text-red-400 text-lg">Failed to load games.</p>
+          <p className="text-gray-600 text-sm mt-2">Make sure the backend is running.</p>
+        </div>
+      )}
 
       {!isLoading && games.length === 0 && (
-        <div className="text-center py-20">
-          <p className="text-gray-400 text-lg">No games found.</p>
-          {search && <p className="text-gray-500 text-sm mt-2">Try a different search term.</p>}
+        <div className="text-center py-32">
+          <div className="text-5xl mb-4">🎮</div>
+          <p className="text-gray-300 text-xl font-semibold mb-2">No games found</p>
+          {search && <p className="text-gray-500 text-sm">Try a different search term or clear the filters.</p>}
         </div>
       )}
 
       {games.length > 0 && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {games.map((game) => (
-              <GameCard key={game.rawgId} game={game} />
-            ))}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+            {games.map((game) => <GameCard key={game.rawgId} game={game} />)}
           </div>
 
-          <div className="flex items-center justify-center gap-4 mt-8">
+          {/* Pagination */}
+          <div className="flex items-center justify-center gap-3 mt-10">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="px-4 py-2 bg-white/10 text-white rounded-lg text-sm disabled:opacity-30 hover:bg-white/20 transition"
+              className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 text-white rounded-xl text-sm font-medium disabled:opacity-30 hover:bg-white/10 transition"
             >
               ← Previous
             </button>
-            <span className="text-gray-400 text-sm">Page {page}</span>
+            <div className="flex items-center gap-1 text-gray-400 text-sm">
+              <span className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white font-medium">{page}</span>
+              {total > 0 && <span className="px-2">of {Math.ceil(total / 24)}</span>}
+            </div>
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={!data?.next}
-              className="px-4 py-2 bg-white/10 text-white rounded-lg text-sm disabled:opacity-30 hover:bg-white/20 transition"
+              className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 text-white rounded-xl text-sm font-medium disabled:opacity-30 hover:bg-white/10 transition"
             >
               Next →
             </button>
           </div>
         </>
       )}
-    </main>
+    </div>
   )
 }

@@ -4,3 +4,4 @@ const api = axios.create({ baseURL: '/api' })
 
 export const getGames = (params) => api.get('/games', { params }).then((r) => r.data)
 export const getGame = (slug) => api.get(`/games/${slug}`).then((r) => r.data)
+export const getGamePricing = (slug) => api.get(`/pricing/${slug}`).then((r) => r.data)

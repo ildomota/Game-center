@@ -1,0 +1,44 @@
+name: Daily Game Fetch
+
+on:
+  schedule:
+    - cron: '0 3 * * *'  # runs every day at 3:00 AM UTC
+  workflow_dispatch:      # allows manual trigger from GitHub UI
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma generate
+
+      - name: Run migrations
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma migrate deploy
+
+      - name: Fetch 100 games from RAWG
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
+        run: npm run fetch-games

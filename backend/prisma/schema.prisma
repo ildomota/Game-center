@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Game {
+  id                 Int      @id @default(autoincrement())
+  rawgId             Int      @unique
+  slug               String   @unique
+  name               String
+  description        String?  @db.Text
+  released           String?
+  backgroundImage    String?
+  rating             Float?
+  ratingTop          Int?
+  ratingsCount       Int?
+  metacritic         Int?
+  playtime           Int?
+  genres             Json?
+  platforms          Json?
+  screenshots        Json?
+  stores             Json?
+  developers         Json?
+  publishers         Json?
+  tags               Json?
+  esrbRating         String?
+  website            String?
+  systemRequirements Json?
+  steamAppId         Int?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}

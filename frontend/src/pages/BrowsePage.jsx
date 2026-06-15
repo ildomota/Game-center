@@ -39,8 +39,7 @@ export default function BrowsePage() {
   }
 
   return (
-    <div className="w-full max-w-[1600px] mx-auto px-6 py-8">
-
+    <div className="w-full max-w-[1400px] mx-auto px-8 py-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-1">
@@ -51,31 +50,22 @@ export default function BrowsePage() {
         </p>
       </div>
 
-      {/* Filters bar */}
+      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 mb-8">
         <div className="flex flex-wrap gap-2 flex-1">
           <button
             onClick={() => setParam('genre', '')}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${!genre ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'}`}
-          >
-            All
-          </button>
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${!genre ? 'bg-indigo-600 text-white' : 'bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10'}`}
+          >All</button>
           {GENRES.map((g) => (
-            <button
-              key={g}
-              onClick={() => setParam('genre', genre === g ? '' : g)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${genre === g ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-white/10'}`}
-            >
+            <button key={g} onClick={() => setParam('genre', genre === g ? '' : g)}
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${genre === g ? 'bg-indigo-600 text-white' : 'bg-white/5 border border-white/10 text-gray-400 hover:text-white hover:bg-white/10'}`}>
               {g}
             </button>
           ))}
         </div>
-
-        <select
-          value={ordering}
-          onChange={(e) => setParam('ordering', e.target.value)}
-          className="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 shrink-0 cursor-pointer"
-        >
+        <select value={ordering} onChange={(e) => setParam('ordering', e.target.value)}
+          className="bg-white/5 border border-white/10 text-white text-sm rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 shrink-0 cursor-pointer">
           {ORDERINGS.map((o) => (
             <option key={o.value} value={o.value} className="bg-[#13131f]">{o.label}</option>
           ))}
@@ -84,17 +74,15 @@ export default function BrowsePage() {
 
       {/* Grid */}
       {isLoading && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-          {[...Array(24)].map((_, i) => (
-            <div key={i} className="animate-pulse bg-gray-800/60 rounded-xl aspect-video" />
-          ))}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {[...Array(24)].map((_, i) => <div key={i} className="animate-pulse bg-white/5 rounded-xl aspect-video" />)}
         </div>
       )}
 
       {isError && (
         <div className="text-center py-32">
           <p className="text-red-400 text-lg">Failed to load games.</p>
-          <p className="text-gray-600 text-sm mt-2">Make sure the backend is running.</p>
+          <p className="text-gray-600 text-sm mt-2">Make sure the backend is running on port 3001.</p>
         </div>
       )}
 
@@ -102,34 +90,26 @@ export default function BrowsePage() {
         <div className="text-center py-32">
           <div className="text-5xl mb-4">🎮</div>
           <p className="text-gray-300 text-xl font-semibold mb-2">No games found</p>
-          {search && <p className="text-gray-500 text-sm">Try a different search term or clear the filters.</p>}
+          {search && <p className="text-gray-500 text-sm">Try a different search term.</p>}
         </div>
       )}
 
       {games.length > 0 && (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {games.map((game) => <GameCard key={game.rawgId} game={game} />)}
           </div>
 
-          {/* Pagination */}
           <div className="flex items-center justify-center gap-3 mt-10">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 text-white rounded-xl text-sm font-medium disabled:opacity-30 hover:bg-white/10 transition"
-            >
+            <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}
+              className="px-5 py-2.5 bg-white/5 border border-white/10 text-white rounded-xl text-sm font-medium disabled:opacity-30 hover:bg-white/10 transition">
               ← Previous
             </button>
-            <div className="flex items-center gap-1 text-gray-400 text-sm">
-              <span className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white font-medium">{page}</span>
-              {total > 0 && <span className="px-2">of {Math.ceil(total / 24)}</span>}
-            </div>
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              disabled={!data?.next}
-              className="flex items-center gap-2 px-5 py-2.5 bg-white/5 border border-white/10 text-white rounded-xl text-sm font-medium disabled:opacity-30 hover:bg-white/10 transition"
-            >
+            <span className="text-gray-400 text-sm px-4">
+              Page {page} {total > 0 && `of ${Math.ceil(total / 24)}`}
+            </span>
+            <button onClick={() => setPage((p) => p + 1)} disabled={!data?.next}
+              className="px-5 py-2.5 bg-white/5 border border-white/10 text-white rounded-xl text-sm font-medium disabled:opacity-30 hover:bg-white/10 transition">
               Next →
             </button>
           </div>

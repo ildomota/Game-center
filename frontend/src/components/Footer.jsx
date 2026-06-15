@@ -2,8 +2,8 @@ import { Link } from 'react-router-dom'
 
 export default function Footer() {
   return (
-    <footer className="w-full border-t border-white/5 bg-[#0a0a0f] mt-16">
-      <div className="w-full max-w-[1600px] mx-auto px-6 py-10">
+    <footer className="w-full border-t border-white/5 bg-[#0a0a0f] mt-20">
+      <div className="w-full max-w-[1400px] mx-auto px-8 py-10">
         <div className="flex flex-col md:flex-row items-start justify-between gap-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
@@ -14,28 +14,28 @@ export default function Footer() {
               </div>
               <span className="text-white font-bold">Game<span className="text-indigo-400">Center</span></span>
             </div>
-            <p className="text-gray-500 text-sm max-w-xs">Your personal game library, powered by RAWG and updated daily with new titles.</p>
+            <p className="text-gray-600 text-sm max-w-xs">Your personal game library, powered by RAWG and updated daily.</p>
           </div>
-          <div className="flex gap-12">
+          <div className="flex gap-16">
             <div>
-              <p className="text-white text-sm font-semibold mb-3">Navigation</p>
+              <p className="text-gray-400 text-xs font-semibold uppercase tracking-widest mb-3">Navigation</p>
               <div className="flex flex-col gap-2">
                 {[['/', 'Home'], ['/browse', 'Browse'], ['/about', 'About']].map(([path, label]) => (
-                  <Link key={path} to={path} className="text-gray-500 hover:text-gray-300 text-sm transition">{label}</Link>
+                  <Link key={path} to={path} className="text-gray-600 hover:text-gray-300 text-sm transition">{label}</Link>
                 ))}
               </div>
             </div>
             <div>
-              <p className="text-white text-sm font-semibold mb-3">Data</p>
+              <p className="text-gray-400 text-xs font-semibold uppercase tracking-widest mb-3">Data</p>
               <div className="flex flex-col gap-2">
-                <a href="https://rawg.io" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-gray-300 text-sm transition">RAWG API</a>
-                <a href="https://store.steampowered.com" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-gray-300 text-sm transition">Steam</a>
+                <a href="https://rawg.io" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-300 text-sm transition">RAWG API</a>
+                <a href="https://store.steampowered.com" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-gray-300 text-sm transition">Steam</a>
               </div>
             </div>
           </div>
         </div>
-        <div className="border-t border-white/5 mt-8 pt-6 text-center text-gray-600 text-xs">
-          © {new Date().getFullYear()} GameCenter. Game data provided by RAWG.io.
+        <div className="border-t border-white/5 mt-8 pt-6 text-center text-gray-700 text-xs">
+          © {new Date().getFullYear()} GameCenter — Game data by RAWG.io
         </div>
       </div>
     </footer>

@@ -12,15 +12,16 @@ const { fetchAndStoreGames } = require('./fetchGames');
 //   -added     most-wishlisted (same as the daily fetch)
 const PAGES = Math.max(1, parseInt(process.env.PAGES || '5', 10));
 const ORDERING = process.env.ORDERING || '-released';
+const MIN_ADDED = parseInt(process.env.MIN_ADDED || '5', 10);
 
 async function refreshRecent() {
   let total = 0;
 
   for (let page = 1; page <= PAGES; page++) {
-    total += await fetchAndStoreGames(page, 34, ORDERING);
+    total += await fetchAndStoreGames(page, 34, ORDERING, { minAdded: MIN_ADDED, requireImage: true });
   }
 
-  console.log(`Special refresh complete. Re-checked pages 1-${PAGES} (ordering ${ORDERING}), inserted ${total} new game(s).`);
+  console.log(`Special refresh complete. Re-checked pages 1-${PAGES} (ordering ${ORDERING}, min added ${MIN_ADDED}), inserted ${total} new game(s).`);
   process.exit(0);
 }
 

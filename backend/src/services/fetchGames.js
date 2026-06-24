@@ -18,7 +18,7 @@ async function saveNextPage(page) {
   });
 }
 
-async function fetchAndStoreGames(page, pageSize = 34, ordering = '-added') {
+async function fetchAndStoreGames(page, pageSize = 34, ordering = '-added', { minAdded = 0, requireImage = false } = {}) {
   console.log(`Fetching RAWG page ${page} (${pageSize} games, ordering ${ordering})...`);
 
   const { data } = await axios.get(`${BASE_URL}/games`, {
@@ -29,6 +29,10 @@ async function fetchAndStoreGames(page, pageSize = 34, ordering = '-added') {
 
   for (const game of data.results) {
     try {
+      // Quality gate — drops shovelware/test entries (only used by the special flow).
+      if ((game.added || 0) < minAdded) continue;
+      if (requireImage && !game.background_image) continue;
+
       // Skip games already stored — avoids wasting RAWG detail/screenshot calls.
       const existing = await prisma.game.findUnique({
         where: { rawgId: game.id },

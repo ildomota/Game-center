@@ -221,12 +221,17 @@ function RequirementColumn({ title, accent, text }) {
   )
 }
 
-function InfoPair({ label, value }) {
-  if (!value) return null
+function InfoPair({ icon, label, value, children }) {
+  if (!value && !children) return null
   return (
-    <div>
-      <p className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">{label}</p>
-      <p className="text-white text-sm font-medium leading-relaxed">{value}</p>
+    <div className="flex items-start gap-3">
+      <div className="w-9 h-9 rounded-lg bg-white/[0.05] flex items-center justify-center shrink-0">
+        <i className={`ti ${icon} text-white/40`} style={{ fontSize: 17 }} aria-hidden="true" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[11px] text-white/35 uppercase tracking-widest font-bold mb-0.5">{label}</p>
+        {children || <p className="text-white text-sm font-semibold leading-snug break-words">{value}</p>}
+      </div>
     </div>
   )
 }
@@ -369,49 +374,55 @@ export default function GameDetailPage() {
               </div>
             )}
 
-            {/* Info grid */}
-            <div className="grid grid-cols-2 gap-x-10 gap-y-5 mb-8">
-              <InfoPair label="Platforms" value={platforms.map(p => p.name || p.platform?.name).join(', ')} />
-              <InfoPair label="Genre" value={genres.map(g => g.name).join(', ')} />
-              <InfoPair label="Release date" value={game.released} />
-              <InfoPair label="Developer" value={developers.map(d => d.name).join(', ')} />
-              <InfoPair label="Publisher" value={publishers.map(p => p.name).join(', ')} />
-              {game.esrbRating && <InfoPair label="Age rating" value={game.esrbRating} />}
-              {game.playtime > 0 && <InfoPair label="Avg playtime" value={`${game.playtime} hours`} />}
-              {game.website && (
-                <div>
-                  <p className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-1">Website</p>
-                  <a href={game.website} target="_blank" rel="noopener noreferrer"
-                    className="text-indigo-400 hover:text-indigo-300 text-sm transition block truncate">
-                    {game.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-                  </a>
+            {/* Game info panel */}
+            <div className="bg-white/[0.03] border border-white/[0.08] rounded-2xl p-6 sm:p-7 mb-8">
+              <h2 className="text-xl font-black text-white mb-6">Game Info</h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-6">
+                <InfoPair icon="ti-device-gamepad-2" label="Platforms" value={platforms.map(p => p.name || p.platform?.name).join(', ')} />
+                <InfoPair icon="ti-category" label="Genre" value={genres.map(g => g.name).join(', ')} />
+                <InfoPair icon="ti-calendar-event" label="Release date" value={game.released} />
+                <InfoPair icon="ti-code" label="Developer" value={developers.map(d => d.name).join(', ')} />
+                <InfoPair icon="ti-building-store" label="Publisher" value={publishers.map(p => p.name).join(', ')} />
+                {game.esrbRating && <InfoPair icon="ti-shield-check" label="Age rating" value={game.esrbRating} />}
+                {game.playtime > 0 && <InfoPair icon="ti-clock" label="Avg playtime" value={`${game.playtime} hours`} />}
+                {game.website && (
+                  <InfoPair icon="ti-world" label="Website">
+                    <a href={game.website} target="_blank" rel="noopener noreferrer"
+                      className="text-indigo-400 hover:text-indigo-300 text-sm font-semibold transition block truncate">
+                      {game.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                    </a>
+                  </InfoPair>
+                )}
+              </div>
+
+              {/* Stores */}
+              {stores.length > 0 && (
+                <div className="mt-8 pt-7 border-t border-white/[0.08]">
+                  <p className="text-[11px] text-white/40 uppercase tracking-widest font-bold mb-3.5">Available on</p>
+                  <div className="flex flex-wrap gap-2">
+                    {stores.map((s, i) => (
+                      <span key={i} className="flex items-center gap-1.5 bg-white/[0.08] border border-white/10 text-gray-100 text-xs rounded-lg px-3 py-2 font-semibold hover:bg-white/[0.12] transition">
+                        <i className="ti ti-shopping-bag text-white/40" style={{ fontSize: 13 }} aria-hidden="true" />
+                        {s.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tags */}
+              {tags.length > 0 && (
+                <div className="mt-8 pt-7 border-t border-white/[0.08]">
+                  <p className="text-[11px] text-white/40 uppercase tracking-widest font-bold mb-3.5">Tags</p>
+                  <div className="flex flex-wrap gap-2">
+                    {tags.map((t, i) => (
+                      <span key={i} className="bg-white/[0.06] text-gray-300 text-xs rounded-full px-3 py-1.5 border border-white/[0.08] hover:border-white/25 hover:text-white transition cursor-default font-medium">{t.name}</span>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
-
-            {/* Stores */}
-            {stores.length > 0 && (
-              <div className="mb-8">
-                <p className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-3">Available on</p>
-                <div className="flex flex-wrap gap-2">
-                  {stores.map((s, i) => (
-                    <span key={i} className="bg-white/5 border border-white/10 text-gray-300 text-xs rounded-lg px-3 py-1.5 font-medium">{s.name}</span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Tags */}
-            {tags.length > 0 && (
-              <div className="mb-8">
-                <p className="text-xs text-gray-500 uppercase tracking-widest font-bold mb-3">Tags</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {tags.map((t, i) => (
-                    <span key={i} className="bg-white/5 text-gray-400 text-xs rounded-lg px-2.5 py-1 border border-white/5 hover:border-white/20 transition cursor-default">{t.name}</span>
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* System requirements */}
             {Object.keys(sysReqs).length > 0 && (

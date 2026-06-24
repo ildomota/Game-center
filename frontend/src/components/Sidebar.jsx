@@ -2,8 +2,10 @@ import { Link, useLocation } from 'react-router-dom'
 
 const NAV_SECTIONS = [
   {
+    title: 'Home',
     items: [
       { label: 'Home', path: '/', icon: 'ti-home' },
+      { label: 'Reviews', path: '/about', icon: 'ti-photo' },
     ],
   },
   {
@@ -52,29 +54,29 @@ export default function Sidebar() {
 
   return (
     <aside className="w-[240px] shrink-0 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto bg-[#081225] py-6 flex-col gap-6 hidden md:flex">
-      <nav className="flex flex-col gap-6 px-5 flex-1">
+      <nav className="flex flex-col gap-8 px-5 flex-1">
         {NAV_SECTIONS.map((section, si) => (
           <div key={si}>
             {section.title && (
-              <h2 className="text-xl font-bold text-white mb-3 tracking-tight">
+              <h2 className="text-2xl font-extrabold text-white mb-4 tracking-tight">
                 {section.title}
               </h2>
             )}
-            <div className="flex flex-col gap-0.5">
+            <div className="flex flex-col gap-1.5">
               {section.items.map((item) => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-3 px-2 py-2 rounded-lg text-sm transition-colors ${
+                  className={`flex items-center gap-3.5 px-3 py-2.5 rounded-lg text-[15px] font-bold transition-colors ${
                     isActive(item.path)
-                      ? 'text-white bg-[#171f33]'
-                      : 'text-white/60 hover:text-white hover:bg-white/5'
+                      ? 'text-white bg-[#171f33] border border-white/10'
+                      : 'text-white/70 hover:text-white hover:bg-white/5'
                   }`}
                 >
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-[#2a344c]">
-                    <i className={`ti ${item.icon}`} style={{ fontSize: 14 }} aria-hidden="true" />
+                  <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-[#2a344c]">
+                    <i className={`ti ${item.icon}`} style={{ fontSize: 17 }} aria-hidden="true" />
                   </div>
-                  <span className="font-medium">{item.label}</span>
+                  <span>{item.label}</span>
                 </Link>
               ))}
             </div>

@@ -29,6 +29,13 @@ async function fetchAndStoreGames(page, pageSize = 34) {
 
   for (const game of data.results) {
     try {
+      // Skip games already stored — avoids wasting RAWG detail/screenshot calls.
+      const existing = await prisma.game.findUnique({
+        where: { rawgId: game.id },
+        select: { id: true },
+      });
+      if (existing) continue;
+
       const { data: detail } = await axios.get(`${BASE_URL}/games/${game.id}`, {
         params: { key: RAWG_KEY },
       });
@@ -103,7 +110,12 @@ async function fetchHundredGames() {
   process.exit(0);
 }
 
-fetchHundredGames().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+// Only auto-run when invoked directly (node fetchGames.js), not when required.
+if (require.main === module) {
+  fetchHundredGames().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
+
+module.exports = { fetchAndStoreGames, getNextPage, saveNextPage };

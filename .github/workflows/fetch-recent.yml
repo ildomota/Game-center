@@ -1,0 +1,42 @@
+name: Refresh Recent Games (manual)
+
+on:
+  workflow_dispatch:       # manual-only — run on demand from the Actions tab
+    inputs:
+      pages:
+        description: 'How many of the first RAWG pages to re-fetch (34 games each)'
+        required: false
+        default: '5'
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma generate
+
+      - name: Re-fetch first pages from RAWG
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
+          PAGES: ${{ github.event.inputs.pages }}
+        run: npm run fetch-recent

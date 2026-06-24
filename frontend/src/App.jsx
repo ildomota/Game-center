@@ -8,7 +8,7 @@ import AboutPage from './pages/AboutPage'
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-[#0f1016] flex flex-col w-full">
+    <div className="min-h-screen bg-[#081225] flex flex-col w-full">
       {/* Top navbar — full width */}
       <Navbar />
 
@@ -24,6 +24,14 @@ export default function App() {
           </Routes>
         </main>
       </div>
+
+      {/* Floating action button */}
+      <button
+        className="fixed right-8 bottom-8 w-14 h-14 rounded-full bg-white text-[#071123] grid place-items-center shadow-lg shadow-black/40 hover:scale-105 transition-transform z-50"
+        aria-label="Add game"
+      >
+        <i className="ti ti-plus" style={{ fontSize: 28 }} aria-hidden="true" />
+      </button>
     </div>
   )
 }

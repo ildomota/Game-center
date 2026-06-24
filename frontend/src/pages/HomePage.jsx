@@ -1,131 +1,142 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Link } from 'react-router-dom'
 import { getGames } from '../api/games'
 import GameCard from '../components/GameCard'
 
-function HeroGame({ game }) {
-  if (!game) return null
-  const genres = Array.isArray(game.genres) ? game.genres : []
+const GENRES = ['Action', 'Adventure', 'RPG', 'Strategy', 'Shooter', 'Puzzle', 'Racing', 'Sports', 'Simulation', 'Horror']
+const ORDERINGS = [
+  { label: 'Relevance', value: '-ratingsCount' },
+  { label: 'Highest Rated', value: '-rating' },
+  { label: 'Newest', value: '-released' },
+  { label: 'Best Metacritic', value: '-metacritic' },
+]
 
-  return (
-    <Link to={`/game/${game.slug}`} className="group relative block w-full overflow-hidden" style={{ height: '460px' }}>
-      <img
-        src={game.backgroundImage}
-        alt={game.name}
-        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#15151e] via-[#15151e]/50 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#15151e]/70 via-transparent to-transparent" />
-
-      <div className="absolute bottom-0 left-0 p-8 max-w-2xl">
-        <div className="flex flex-wrap gap-2 mb-3">
-          {genres.slice(0, 3).map((g) => (
-            <span key={g.id || g.name} className="text-[11px] bg-white/10 text-white rounded px-2.5 py-0.5 font-semibold uppercase tracking-wide">
-              {g.name}
-            </span>
-          ))}
-        </div>
-        <h2 className="text-4xl font-black text-white mb-3 leading-tight group-hover:text-indigo-200 transition-colors">
-          {game.name}
-        </h2>
-        <div className="flex items-center gap-3">
-          {game.rating > 0 && (
-            <span className="flex items-center gap-1 bg-black/40 rounded px-3 py-1.5 text-sm font-bold text-white">
-              <span className="text-yellow-400">★</span> {game.rating?.toFixed(1)}
-            </span>
-          )}
-          {game.metacritic && (
-            <span className={`rounded px-3 py-1.5 text-xs font-bold border ${
-              game.metacritic >= 75 ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-            }`}>
-              Metacritic {game.metacritic}
-            </span>
-          )}
-          {game.released && <span className="text-[#777] text-sm">{new Date(game.released).getFullYear()}</span>}
-          <span className="text-sm text-indigo-400 font-semibold group-hover:text-white transition-colors">View game →</span>
-        </div>
-      </div>
-    </Link>
-  )
-}
-
-function SectionHeader({ title, subtitle, link }) {
-  return (
-    <div className="flex items-center justify-between mb-6">
-      <div>
-        <h2 className="text-3xl font-black text-white tracking-tight">{title}</h2>
-        {subtitle && <p className="text-[#555] text-sm mt-1">{subtitle}</p>}
-      </div>
-      {link && (
-        <Link to={link} className="text-xs font-semibold text-[#666] hover:text-white transition-colors uppercase tracking-widest">
-          View all →
-        </Link>
-      )}
-    </div>
-  )
+const PILL =
+  'flex items-center gap-2 bg-[#172137] rounded-xl pl-4 pr-2 py-1.5'
+const SELECT =
+  'bg-transparent border-none text-white text-sm font-bold focus:outline-none cursor-pointer appearance-none pr-6'
+const CARET = {
+  backgroundImage:
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")",
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 2px center',
 }
 
 export default function HomePage() {
-  const { data: topData, isLoading: loadingTop } = useQuery({
-    queryKey: ['games', 'top'],
-    queryFn: () => getGames({ limit: 9, ordering: '-rating' }),
-  })
-  const { data: newData, isLoading: loadingNew } = useQuery({
-    queryKey: ['games', 'new'],
-    queryFn: () => getGames({ limit: 10, ordering: '-released' }),
+  const [ordering, setOrdering] = useState('-ratingsCount')
+  const [genre, setGenre] = useState('')
+  const [page, setPage] = useState(1)
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['games', 'home', ordering, genre, page],
+    queryFn: () => getGames({ ordering, genre, page, limit: 20 }),
+    keepPreviousData: true,
   })
 
-  const topGames = topData?.results || []
-  const newGames = newData?.results || []
-  const featured = topGames[0]
-  const rest = topGames.slice(1)
+  const games = data?.results || []
+  const total = data?.count || 0
+
+  const reset = (fn) => (e) => { fn(e.target.value); setPage(1) }
 
   return (
-    <div className="w-full flex flex-col">
-      {/* Hero — full bleed across content area */}
-      {loadingTop
-        ? <div className="animate-pulse bg-white/5" style={{ height: 460 }} />
-        : <HeroGame game={featured} />
-      }
+    <div className="w-full px-10 py-10">
 
-      {/* Sections — full width with padding */}
-      <div className="w-full px-8 flex flex-col gap-14 py-10">
-        <section>
-          <SectionHeader title="Top Rated" subtitle="Highest rated games in our library" link="/browse?ordering=-rating" />
-          {loadingTop ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-5 gap-y-10">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="flex flex-col gap-3">
-                  <div className="animate-pulse bg-white/5 rounded-xl w-full" style={{ aspectRatio: '16/9' }} />
-                  <div className="animate-pulse bg-white/5 rounded h-4 w-3/4" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-5 gap-y-10">
-              {rest.map((game) => <GameCard key={game.rawgId} game={game} />)}
-            </div>
-          )}
-        </section>
-
-        <section>
-          <SectionHeader title="Recently Released" subtitle="Latest games added to our library" link="/browse?ordering=-released" />
-          {loadingNew ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-5 gap-y-10">
-              {[...Array(8)].map((_, i) => (
-                <div key={i} className="flex flex-col gap-3">
-                  <div className="animate-pulse bg-white/5 rounded-xl w-full" style={{ aspectRatio: '16/9' }} />
-                  <div className="animate-pulse bg-white/5 rounded h-4 w-3/4" />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-5 gap-y-10">
-              {newGames.map((game) => <GameCard key={game.rawgId} game={game} />)}
-            </div>
-          )}
-        </section>
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-[64px] font-black leading-none tracking-tight text-white">
+          New and trending
+        </h1>
+        <p className="text-base font-medium text-white/50 mt-3">
+          Based on player counts and release date
+        </p>
       </div>
+
+      {/* Controls */}
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className={PILL}>
+            <span className="text-sm text-white/40">Order by:</span>
+            <select value={ordering} onChange={reset(setOrdering)} className={SELECT} style={CARET}>
+              {ORDERINGS.map((o) => (
+                <option key={o.value} value={o.value} className="bg-[#172137]">{o.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className={PILL}>
+            <span className="text-sm text-white/40">Genre:</span>
+            <select value={genre} onChange={reset(setGenre)} className={SELECT} style={CARET}>
+              <option value="" className="bg-[#172137]">All</option>
+              {GENRES.map((g) => (
+                <option key={g} value={g} className="bg-[#172137]">{g}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Display options */}
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="text-[11px] font-bold text-white/30 uppercase tracking-widest">Display options:</span>
+          <div className="flex items-center bg-[#172137] rounded-lg p-1 gap-1">
+            <button className="w-8 h-8 bg-[#26314a] rounded-md flex items-center justify-center" aria-label="Grid view">
+              <i className="ti ti-layout-grid text-white" style={{ fontSize: 15 }} aria-hidden="true" />
+            </button>
+            <button className="w-8 h-8 rounded-md flex items-center justify-center text-white/40 hover:text-white" aria-label="List view">
+              <i className="ti ti-list" style={{ fontSize: 15 }} aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Grid */}
+      {isLoading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="animate-pulse bg-[#121b2e] rounded-xl aspect-[4/3]" />
+          ))}
+        </div>
+      )}
+
+      {isError && (
+        <div className="text-center py-32">
+          <p className="text-red-400 text-lg">Failed to load games.</p>
+          <p className="text-white/30 text-sm mt-2">Make sure the backend is running on port 3001.</p>
+        </div>
+      )}
+
+      {!isLoading && games.length === 0 && (
+        <div className="text-center py-32">
+          <p className="text-white/60 text-xl font-bold">No games found</p>
+        </div>
+      )}
+
+      {games.length > 0 && (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+            {games.map((game) => <GameCard key={game.rawgId} game={game} />)}
+          </div>
+
+          <div className="mt-16 flex items-center justify-center gap-3">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+              className="bg-[#172137] hover:bg-white hover:text-black text-white px-6 py-2.5 rounded-xl font-bold transition-all disabled:opacity-30 disabled:hover:bg-[#172137] disabled:hover:text-white"
+            >
+              ← Previous
+            </button>
+            <span className="text-white/50 text-sm font-medium px-2">
+              Page {page}{total > 0 && ` of ${Math.ceil(total / 20)}`}
+            </span>
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={!data?.next}
+              className="bg-[#172137] hover:bg-white hover:text-black text-white px-6 py-2.5 rounded-xl font-bold transition-all disabled:opacity-30 disabled:hover:bg-[#172137] disabled:hover:text-white"
+            >
+              Next →
+            </button>
+          </div>
+        </>
+      )}
     </div>
   )
 }

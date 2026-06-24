@@ -282,7 +282,7 @@ export default function GameDetailPage() {
           ? <img src={game.backgroundImage} alt={game.name} className="w-full h-full object-cover object-top" />
           : <div className="w-full h-full bg-gray-900" />
         }
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0f1016] via-[#0f1016]/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#081225] via-[#081225]/60 to-transparent" />
       </div>
 
       {/* ── PAGE CONTENT — pulled up over the hero bottom ── */}
@@ -357,7 +357,7 @@ export default function GameDetailPage() {
                 <div className={`relative ${!showFullDesc ? 'max-h-48 overflow-hidden' : ''}`}>
                   <p className="text-gray-300 text-[15px] leading-8">{game.description}</p>
                   {!showFullDesc && (
-                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#0f1016] to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#081225] to-transparent" />
                   )}
                 </div>
                 {game.description.length > 300 && (

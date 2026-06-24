@@ -14,7 +14,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="w-full sticky top-0 z-50 bg-[#0f1016] h-16 flex items-center px-6 gap-8 shrink-0">
+    <nav className="w-full sticky top-0 z-50 bg-[#081225] h-16 flex items-center px-6 gap-8 shrink-0">
 
       {/* Brand */}
       <Link to="/" className="flex items-center gap-2 shrink-0 w-[240px]">
@@ -31,7 +31,7 @@ export default function Navbar() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search games..."
-            className="w-full bg-white/[0.07] border-none rounded-full px-6 py-2.5 text-[13px] text-white placeholder-white/30 focus:bg-white focus:text-black focus:placeholder-black/40 transition-all outline-none"
+            className="w-full bg-[#172137] border-none rounded-full px-6 py-2.5 text-[13px] text-white placeholder-[#9aa5ba] focus:bg-white focus:text-black focus:placeholder-black/40 transition-all outline-none"
           />
         </div>
       </form>

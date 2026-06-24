@@ -59,7 +59,7 @@ export default function BrowsePage() {
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
         <div className="flex items-center gap-3 flex-wrap">
           {/* Order by pill dropdown */}
-          <div className="flex items-center gap-2 bg-[#202028] rounded-lg pl-3 pr-1 py-1">
+          <div className="flex items-center gap-2 bg-[#172137] rounded-lg pl-3 pr-1 py-1">
             <span className="text-sm text-white/40">Order by:</span>
             <select
               value={ordering}
@@ -68,13 +68,13 @@ export default function BrowsePage() {
               style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 2px center' }}
             >
               {ORDERINGS.map((o) => (
-                <option key={o.value} value={o.value} className="bg-[#202028]">{o.label}</option>
+                <option key={o.value} value={o.value} className="bg-[#172137]">{o.label}</option>
               ))}
             </select>
           </div>
 
           {/* Genre pill dropdown */}
-          <div className="flex items-center gap-2 bg-[#202028] rounded-lg pl-3 pr-1 py-1">
+          <div className="flex items-center gap-2 bg-[#172137] rounded-lg pl-3 pr-1 py-1">
             <span className="text-sm text-white/40">Genre:</span>
             <select
               value={genre}
@@ -82,9 +82,9 @@ export default function BrowsePage() {
               className="bg-transparent border-none text-white text-sm font-bold focus:outline-none cursor-pointer appearance-none pr-6"
               style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 2px center' }}
             >
-              <option value="" className="bg-[#202028]">All</option>
+              <option value="" className="bg-[#172137]">All</option>
               {GENRES.map((g) => (
-                <option key={g} value={g} className="bg-[#202028]">{g}</option>
+                <option key={g} value={g} className="bg-[#172137]">{g}</option>
               ))}
             </select>
           </div>
@@ -93,7 +93,7 @@ export default function BrowsePage() {
         {/* Display options */}
         <div className="flex items-center gap-2 shrink-0">
           <span className="text-[11px] font-bold text-white/30 uppercase tracking-widest">Display options:</span>
-          <div className="flex items-center bg-[#202028] rounded-lg p-1 gap-1">
+          <div className="flex items-center bg-[#172137] rounded-lg p-1 gap-1">
             <button className="w-8 h-8 bg-white/10 rounded-md flex items-center justify-center" aria-label="Grid view">
               <i className="ti ti-layout-grid text-white" style={{ fontSize: 15 }} aria-hidden="true" />
             </button>
@@ -108,7 +108,7 @@ export default function BrowsePage() {
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {[...Array(20)].map((_, i) => (
-            <div key={i} className="animate-pulse bg-[#202028] rounded-xl aspect-[4/3]" />
+            <div key={i} className="animate-pulse bg-[#172137] rounded-xl aspect-[4/3]" />
           ))}
         </div>
       )}
@@ -137,7 +137,7 @@ export default function BrowsePage() {
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
-              className="bg-[#202028] hover:bg-white hover:text-black text-white px-6 py-2.5 rounded-xl font-bold transition-all disabled:opacity-30 disabled:hover:bg-[#202028] disabled:hover:text-white"
+              className="bg-[#172137] hover:bg-white hover:text-black text-white px-6 py-2.5 rounded-xl font-bold transition-all disabled:opacity-30 disabled:hover:bg-[#172137] disabled:hover:text-white"
             >
               ← Previous
             </button>
@@ -147,7 +147,7 @@ export default function BrowsePage() {
             <button
               onClick={() => setPage((p) => p + 1)}
               disabled={!data?.next}
-              className="bg-[#202028] hover:bg-white hover:text-black text-white px-6 py-2.5 rounded-xl font-bold transition-all disabled:opacity-30 disabled:hover:bg-[#202028] disabled:hover:text-white"
+              className="bg-[#172137] hover:bg-white hover:text-black text-white px-6 py-2.5 rounded-xl font-bold transition-all disabled:opacity-30 disabled:hover:bg-[#172137] disabled:hover:text-white"
             >
               Next →
             </button>

@@ -18,11 +18,11 @@ async function saveNextPage(page) {
   });
 }
 
-async function fetchAndStoreGames(page, pageSize = 34) {
-  console.log(`Fetching RAWG page ${page} (${pageSize} games)...`);
+async function fetchAndStoreGames(page, pageSize = 34, ordering = '-added') {
+  console.log(`Fetching RAWG page ${page} (${pageSize} games, ordering ${ordering})...`);
 
   const { data } = await axios.get(`${BASE_URL}/games`, {
-    params: { key: RAWG_KEY, page, page_size: pageSize, ordering: '-added' },
+    params: { key: RAWG_KEY, page, page_size: pageSize, ordering },
   });
 
   let saved = 0;

@@ -7,6 +7,15 @@ on:
         description: 'How many of the first RAWG pages to re-fetch (34 games each)'
         required: false
         default: '5'
+      ordering:
+        description: 'RAWG ordering: -released (newest releases), -created (newest RAWG entries), or -added (most wishlisted)'
+        required: false
+        default: '-released'
+        type: choice
+        options:
+          - '-released'
+          - '-created'
+          - '-added'
 
 jobs:
   refresh:
@@ -39,4 +48,5 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           RAWG_API_KEY: ${{ secrets.RAWG_API_KEY }}
           PAGES: ${{ github.event.inputs.pages }}
+          ORDERING: ${{ github.event.inputs.ordering }}
         run: npm run fetch-recent

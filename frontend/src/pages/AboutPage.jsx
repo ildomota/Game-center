@@ -129,6 +129,13 @@ export default function AboutPage() {
           </Link>
         </div>
       </section>
+
+      <p className="mt-16 text-center text-[11px] text-white/25">
+        Game data by{' '}
+        <a href="https://rawg.io" target="_blank" rel="noopener noreferrer" className="hover:text-white/50 transition-colors">
+          RAWG.io
+        </a>
+      </p>
     </div>
   )
 }

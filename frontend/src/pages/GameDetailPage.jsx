@@ -248,7 +248,7 @@ export default function GameDetailPage() {
   if (isLoading) return (
     <div className="w-full max-w-[1400px] mx-auto px-8 py-12 animate-pulse space-y-8">
       <div className="h-[460px] bg-white/5" />
-      <div className="grid lg:grid-cols-[1fr_360px] gap-12">
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_360px] gap-12">
         <div className="space-y-4">
           {[...Array(6)].map((_, i) => <div key={i} className="h-4 bg-white/5 rounded" style={{ width: `${100 - i * 10}%` }} />)}
         </div>
@@ -287,7 +287,7 @@ export default function GameDetailPage() {
           ? <img src={game.backgroundImage} alt={game.name} className="w-full h-full object-cover object-top" />
           : <div className="w-full h-full bg-gray-900" />
         }
-        <div className="absolute inset-0 bg-gradient-to-t from-[#081225] via-[#081225]/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0b1326] via-[#0b1326]/60 to-transparent" />
       </div>
 
       {/* ── PAGE CONTENT — pulled up over the hero bottom ── */}
@@ -303,7 +303,7 @@ export default function GameDetailPage() {
         </nav>
 
         {/* ── TWO-COLUMN LAYOUT ── */}
-        <div className="grid lg:grid-cols-[1fr_360px] gap-12 items-start">
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_360px] gap-12 items-start">
 
           {/* ════ LEFT — title, about, info ════ */}
           <div>
@@ -362,7 +362,7 @@ export default function GameDetailPage() {
                 <div className={`relative ${!showFullDesc ? 'max-h-48 overflow-hidden' : ''}`}>
                   <p className="text-gray-300 text-[15px] leading-8">{game.description}</p>
                   {!showFullDesc && (
-                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#081225] to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#0b1326] to-transparent" />
                   )}
                 </div>
                 {game.description.length > 300 && (

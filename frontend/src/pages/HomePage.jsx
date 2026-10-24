@@ -7,7 +7,7 @@ import SelectPill from '../components/SelectPill'
 const GENRES = ['Action', 'Adventure', 'RPG', 'Strategy', 'Shooter', 'Puzzle', 'Racing', 'Sports', 'Simulation', 'Horror']
 const GENRE_OPTIONS = [{ label: 'All', value: '' }, ...GENRES.map((g) => ({ label: g, value: g }))]
 const ORDERINGS = [
-  { label: 'Relevance', value: '-ratingsCount' },
+  { label: 'Trending', value: 'trending' },
   { label: 'Highest Rated', value: '-rating' },
   { label: 'Newest', value: '-released' },
   { label: 'Best Metacritic', value: '-metacritic' },
@@ -16,7 +16,7 @@ const ORDERINGS = [
 const GRID = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-12'
 
 export default function HomePage() {
-  const [ordering, setOrdering] = useState('-ratingsCount')
+  const [ordering, setOrdering] = useState('trending')
   const [genre, setGenre] = useState('')
 
   const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({

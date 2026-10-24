@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { getGames } from '../api/games'
+import ScoreBadge from './ScoreBadge'
 
 const RESULT_LIMIT = 6
 
@@ -123,9 +124,7 @@ export default function Navbar() {
                   <p className="text-white text-[13px] font-semibold truncate">{game.name}</p>
                   {game.released && <p className="text-white/40 text-[11px] mt-0.5">{game.released.slice(0, 4)}</p>}
                 </div>
-                {game.metacritic && (
-                  <span className="text-[11px] font-bold text-[#6ee07b] shrink-0">{game.metacritic}</span>
-                )}
+                <ScoreBadge score={game.metacritic} />
               </button>
             ))}
 

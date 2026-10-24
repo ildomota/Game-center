@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import ScoreBadge from './ScoreBadge'
 
 const PLATFORM_ICONS = {
   pc: 'ti-device-laptop',
@@ -64,9 +65,7 @@ export default function GameCard({ game }) {
               <i key={p.key} className={`ti ${p.icon} text-white/75`} style={{ fontSize: 16 }} aria-hidden="true" />
             ))}
           </div>
-          {game.metacritic && (
-            <span className="text-[11px] font-bold text-[#6ee07b]">{game.metacritic}</span>
-          )}
+          <ScoreBadge score={game.metacritic} />
         </div>
 
         <h3 className="text-white font-semibold text-[15px] leading-6 line-clamp-2">
